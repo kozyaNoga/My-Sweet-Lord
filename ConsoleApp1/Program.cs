@@ -14,7 +14,8 @@ namespace ConsoleApp1
     public class Game : GameWindow
     {
         private float i = 0.01f, sec = 0.0f;
-        private int fps, DLobj;
+        private int fps;
+        private int VBOVertex, VBOColor;
         private float[] vertices = new float[] 
         {
             -0.5f, -0.5f, 0.0f,
@@ -27,7 +28,7 @@ namespace ConsoleApp1
             1.0f, 0.0f, 0.0f, 0.0f,
             0.0f, 1.0f, 0.0f, 0.0f,
             0.0f, 0.0f, 1.0f, 0.0f,
-            0.8f, 0.6f, 0.2f, 1.0f
+            0.8f, 0.6f, 0.2f, 0.0f
         };
         public Game(GameWindowSettings GWsettings, NativeWindowSettings NWsettings) : base(GWsettings, NWsettings)
         {
@@ -40,7 +41,7 @@ namespace ConsoleApp1
             GL.ClearColor(0 / 0.0f, 0 / 0.0f, 0 / 0.0f, 0 / 0.0f);
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
-            //DLobj = CreateDisplayList();
+            initVertexBufferObject();
         }
         protected override void OnResize(ResizeEventArgs e) 
         {
@@ -61,68 +62,48 @@ namespace ConsoleApp1
         }
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            //GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            //GL.PointSize(3);
-            //GL.Begin(PrimitiveType.Points);
-            //GL.Vertex2(0.0f, 0.0f);
-            //GL.End();
-
-            //..........................................................................
-            // (DL)
-            //DrawDisplayList();
-
-            //..........................................................................
-            // (VA)
-            DrawVertexArray();
-
+            DrawVertexBufferObject();
             SwapBuffers();
             base.OnRenderFrame(args);
         }
         protected override void OnUnload()
         {
             base.OnUnload();
-            //DeleteDisplayList();
         }
-        private int CreateDisplayList()
-        {
-            int index = GL.GenLists(1);
-            GL.NewList(index, ListMode.Compile);
-            GL.Begin(PrimitiveType.LineLoop);
-            GL.PointSize(30);
-            //GL.Color3(1.0f, 1.0f, 1.0f);
-            GL.Vertex3(0.5f, 0.0f, 0.0f);
-            GL.Vertex3(0.0f, 0.5f, 0.0f);
-            GL.Vertex3(0.0f, 0.0f, 0.0f);
-            GL.End();
-            GL.EndList();
-            return index;
-        }
-        private void DrawDisplayList()
-        {
-            GL.CallList(DLobj);
-        }
-        private void DeleteDisplayList()
-        {
-            GL.DeleteLists(DLobj, 1);
-        }
+
         //..........................................................................
-        //Vertex Array (VA)
-        public void DrawVertexArray()
+        // Vertex Buffer Object (VBO) 
+        private int CreateVertexBufferObject(float[] data)
+        {
+            int indexVBO = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, indexVBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, data.Length * sizeof(float), data, BufferUsageHint.StaticDraw);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            return indexVBO;
+        }
+        private void initVertexBufferObject()
+        {
+            VBOVertex = CreateVertexBufferObject(vertices);
+            VBOColor = CreateVertexBufferObject(colors);
+        }
+        private void DrawVertexBufferObject()
         {
             GL.EnableClientState(ArrayCap.VertexArray);
-            GL.VertexPointer(3, VertexPointerType.Float, 0, vertices);
-
             GL.EnableClientState(ArrayCap.ColorArray);
-            GL.ColorPointer(4,ColorPointerType.Float, 0, colors);
 
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBOVertex);
+            GL.VertexPointer(3, VertexPointerType.Float, 0, 0);
 
-            GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4); 
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBOColor);
+            GL.ColorPointer(4, ColorPointerType.Float, 0, 0);
+
+            GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.DisableClientState(ArrayCap.VertexArray);
             GL.DisableClientState(ArrayCap.ColorArray);
         }
-
     }
     class Program
     {
