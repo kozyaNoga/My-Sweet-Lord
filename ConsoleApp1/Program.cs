@@ -69,11 +69,12 @@ namespace ConsoleApp1
         }
         protected override void OnUnload()
         {
+            DeleteVertexBufferObject();
             base.OnUnload();
         }
 
         //..........................................................................
-        // Vertex Buffer Object (VBO) 
+        // Vertex Buffer Object (VBO)
         private int CreateVertexBufferObject(float[] data)
         {
             int indexVBO = GL.GenBuffer();
@@ -103,6 +104,11 @@ namespace ConsoleApp1
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.DisableClientState(ArrayCap.VertexArray);
             GL.DisableClientState(ArrayCap.ColorArray);
+        }
+        private void DeleteVertexBufferObject()
+        {
+            GL.DeleteBuffer(VBOVertex);
+            GL.DeleteBuffer(VBOColor);
         }
     }
     class Program
