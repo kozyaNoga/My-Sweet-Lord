@@ -74,7 +74,11 @@ namespace ConsoleApp1
         }
 
         //..........................................................................
+<<<<<<< HEAD
         // Vertex Buffer Object (VBO)
+=======
+        // Vertex Buffer Object (VBO) 
+>>>>>>> a7351cbed21e808025fec694cac05a56437563de
         private int CreateVertexBufferObject(float[] data)
         {
             int indexVBO = GL.GenBuffer();
@@ -105,11 +109,14 @@ namespace ConsoleApp1
             GL.DisableClientState(ArrayCap.VertexArray);
             GL.DisableClientState(ArrayCap.ColorArray);
         }
+<<<<<<< HEAD
         private void DeleteVertexBufferObject()
         {
             GL.DeleteBuffer(VBOVertex);
             GL.DeleteBuffer(VBOColor);
         }
+=======
+>>>>>>> a7351cbed21e808025fec694cac05a56437563de
     }
     class Program
     {
